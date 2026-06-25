@@ -3,34 +3,32 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Scoring Matrix · Link Generator</title>
+<title>Scoring Matrix · Client Manager</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
-    --ink:#120E19;
-    --gtm:#F87B22;
-    --paper:#FFFFFF;
-    --bg:#F5F4F7;
-    --line:#E7E4EC;
-    --muted:#6B6577;
-    --muted-2:#9A93A6;
-    --brand:#01336E;            /* preview brand, updated live */
-    --brand-soft:#01336E22;
+    --ink:#120E19;--gtm:#F87B22;--paper:#FFFFFF;--bg:#F5F4F7;--line:#E7E4EC;
+    --muted:#6B6577;--muted-2:#9A93A6;--brand:#01336E;--brand-soft:#01336E22;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{font-family:'DM Sans',system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45;-webkit-font-smoothing:antialiased;}
-  h1,h2,h3,.brandface{font-family:'Century Gothic','Futura','DM Sans',sans-serif;letter-spacing:.2px;}
+  h1,h2,h3{font-family:'Century Gothic','Futura','DM Sans',sans-serif;letter-spacing:.2px;}
   .wrap{max-width:920px;margin:0 auto;padding:34px 20px 80px;}
 
-  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px;}
   .topbar h1{font-size:24px;margin:0;}
   .topbar .sub{font-size:13px;color:var(--muted);margin-top:3px;}
   .gtmmark{font-size:11px;font-weight:600;color:var(--muted);text-align:right;line-height:1.3;}
   .gtmmark b{color:var(--ink);}
   .gtmmark .o{color:var(--gtm);}
+
+  .banner{background:#FFF4E8;border:1px solid #F8C896;color:#8A4B12;border-radius:12px;padding:14px 16px;font-size:13px;margin-bottom:20px;display:none;}
+  .banner.show{display:block;}
+  .banner code{background:#fff;border:1px solid #F0D2A8;border-radius:5px;padding:1px 6px;font-size:12px;}
 
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
   @media(max-width:760px){.grid{grid-template-columns:1fr;}}
@@ -39,33 +37,30 @@
   .card h2{font-size:13px;text-transform:uppercase;letter-spacing:1.2px;margin:0 0 18px;color:var(--muted);}
 
   .field{margin-bottom:18px;}
+  .field:last-child{margin-bottom:0;}
   .field label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:7px;}
-  .field input[type=text]{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-family:inherit;font-size:15px;color:var(--ink);background:#FCFBFD;}
-  .field input[type=text]:focus{outline:none;border-color:var(--gtm);}
+  .field input[type=text], .field select{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-family:inherit;font-size:15px;color:var(--ink);background:#FCFBFD;}
+  .field input[type=text]:focus, .field select:focus{outline:none;border-color:var(--gtm);}
+  select.cs{appearance:none;-webkit-appearance:none;background:#FCFBFD url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%239A93A6'/></svg>") no-repeat right 14px center;cursor:pointer;}
 
+  .addbox{margin-top:20px;border-top:1px dashed var(--line);padding-top:18px;}
+  .addbox h3{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted-2);margin:0 0 14px;}
   .hexrow{display:flex;gap:10px;align-items:center;}
   .hexrow input[type=color]{width:48px;height:48px;border:1px solid var(--line);border-radius:11px;padding:3px;background:#fff;cursor:pointer;flex:none;}
   .hexrow .hexwrap{position:relative;flex:1;}
   .hexrow .hash{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted-2);font-weight:700;pointer-events:none;}
-  .hexrow input.hex{width:100%;padding-left:28px;text-transform:uppercase;letter-spacing:1px;font-weight:600;}
+  .hexrow input.hex{width:100%;padding:12px 14px 12px 28px;border:1px solid var(--line);border-radius:11px;font-family:inherit;font-size:15px;text-transform:uppercase;letter-spacing:1px;font-weight:600;background:#FCFBFD;color:var(--ink);}
+  .hexrow input.hex:focus{outline:none;border-color:var(--gtm);}
 
-  .swatches{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
-  .sw{width:26px;height:26px;border-radius:8px;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);}
-  .sw:hover{transform:scale(1.08);}
-
-  /* output */
-  .out{margin-top:6px;}
-  .urlbox{display:flex;gap:10px;}
-  .urlbox input{flex:1;border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-family:'DM Sans';font-size:13px;color:var(--ink);background:#FBFAFC;}
   .btn{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:11px;padding:12px 16px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.15s;white-space:nowrap;}
   .btn:hover{border-color:var(--gtm);color:var(--gtm);}
   .btn.primary{background:var(--gtm);border-color:var(--gtm);color:#fff;}
   .btn.primary:hover{filter:brightness(.96);color:#fff;}
-  .btnrow{display:flex;gap:10px;margin-top:12px;}
-  .copied{font-size:12px;color:var(--gtm);font-weight:600;margin-top:8px;height:14px;opacity:0;transition:.2s;}
-  .copied.show{opacity:1;}
+  .btn:disabled{opacity:.5;cursor:default;}
+  .savemsg{font-size:12px;color:var(--muted);font-weight:600;margin-top:10px;height:14px;}
+  .savemsg.ok{color:#1E9E6A;}
+  .savemsg.err{color:#D64545;}
 
-  /* live preview */
   .preview{border:1px solid var(--line);border-radius:14px;overflow:hidden;}
   .pv-top{display:flex;align-items:center;gap:12px;padding:16px;background:#fff;}
   .pv-dot{width:40px;height:40px;border-radius:11px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:'Century Gothic','Futura',sans-serif;font-size:19px;flex:none;}
@@ -76,15 +71,19 @@
   .pv-split .a{background:var(--brand);width:64%;}
   .pv-split .b{background:var(--ink);width:36%;}
   .pv-rows{display:flex;flex-direction:column;gap:8px;}
-  .pv-row{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:600;}
-  .pv-row.on{background:linear-gradient(90deg,var(--brand-soft),transparent 70%);}
+  .pv-row{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:linear-gradient(90deg,var(--brand-soft),transparent 70%);font-size:13px;font-weight:600;}
   .pv-check{width:18px;height:18px;border-radius:5px;background:var(--brand);position:relative;flex:none;}
   .pv-check::after{content:"";position:absolute;left:5px;top:2px;width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);}
   .pv-pts{margin-left:auto;font-family:'Century Gothic','Futura',sans-serif;font-weight:700;}
   .pv-chip{font-size:10px;font-weight:700;color:#fff;background:#FF7A59;border-radius:999px;padding:2px 8px;}
 
+  .urlbox{display:flex;gap:10px;}
+  .urlbox input{flex:1;border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-family:'DM Sans';font-size:13px;color:var(--ink);background:#FBFAFC;}
+  .copied{font-size:12px;color:var(--gtm);font-weight:600;margin-top:8px;height:14px;opacity:0;transition:.2s;}
+  .copied.show{opacity:1;}
+  .btnrow{display:flex;gap:10px;margin-top:12px;}
+
   .note{font-size:12.5px;color:var(--muted);margin-top:16px;line-height:1.5;}
-  .note b{color:var(--ink);}
   footer{text-align:center;color:var(--muted-2);font-size:12px;margin-top:34px;}
   footer b{color:var(--ink);}
   footer .o{color:var(--gtm);}
@@ -96,40 +95,42 @@
   <div class="topbar">
     <div>
       <h1>Account Scoring Matrix</h1>
-      <div class="sub">Per-client link generator</div>
+      <div class="sub">Client manager · brand colors stored in Supabase</div>
     </div>
     <div class="gtmmark">Built by <b>GTM<span class="o">·</span>Collective</b><br/>gtmcollective.ai</div>
   </div>
 
+  <div class="banner" id="banner"></div>
+
   <div class="grid">
-    <!-- LEFT: controls -->
+    <!-- LEFT -->
     <div class="card">
-      <h2>1 · Client details</h2>
+      <h2>1 · Client</h2>
 
       <div class="field">
-        <label>Client name</label>
-        <input type="text" id="client" placeholder="e.g. Besedo" value="Besedo" />
+        <label>Select a client</label>
+        <select class="cs" id="clientSelect"><option value="__new">➕ New client…</option></select>
       </div>
 
-      <div class="field">
-        <label>Brand color</label>
-        <div class="hexrow">
-          <input type="color" id="picker" value="#01336E" />
-          <div class="hexwrap">
-            <span class="hash">#</span>
-            <input type="text" class="hex" id="hex" value="01336E" maxlength="6" />
+      <div class="addbox">
+        <h3 id="addTitle">Add a new client</h3>
+        <div class="field">
+          <label>Client name</label>
+          <input type="text" id="newName" placeholder="e.g. Besedo" />
+        </div>
+        <div class="field">
+          <label>Brand color</label>
+          <div class="hexrow">
+            <input type="color" id="newColor" value="#01336E" />
+            <div class="hexwrap"><span class="hash">#</span><input type="text" class="hex" id="newHex" value="01336E" maxlength="6" /></div>
           </div>
         </div>
-        <div class="swatches" id="swatches"></div>
-      </div>
-
-      <div class="field" style="margin-bottom:0">
-        <label>Tool base URL</label>
-        <input type="text" id="base" placeholder="https://gtm-scoring-matrix.vercel.app" />
+        <button class="btn primary" id="saveBtn">Save client</button>
+        <div class="savemsg" id="saveMsg"></div>
       </div>
     </div>
 
-    <!-- RIGHT: preview -->
+    <!-- RIGHT -->
     <div class="card">
       <h2>2 · Live preview</h2>
       <div class="preview">
@@ -143,106 +144,121 @@
         <div class="pv-body">
           <div class="pv-split"></div>
           <div class="pv-rows">
-            <div class="pv-row on"><span class="pv-check"></span> M&amp;A <span class="pv-chip">HubSpot</span> <span class="pv-pts">42</span></div>
-            <div class="pv-row on"><span class="pv-check"></span> Bombora <span class="pv-chip" style="background:#FF2120">Factors.ai</span> <span class="pv-pts">22</span></div>
+            <div class="pv-row"><span class="pv-check"></span> M&amp;A <span class="pv-chip">HubSpot</span> <span class="pv-pts">42</span></div>
+            <div class="pv-row"><span class="pv-check"></span> Bombora <span class="pv-chip" style="background:#FF2120">Factors.ai</span> <span class="pv-pts">22</span></div>
           </div>
         </div>
       </div>
-      <div class="note">The brand color drives the client dot, selected-row highlight, score bars, and the Company side of the split bar — exactly as it renders in the live tool.</div>
+      <div class="note">The brand color is read from Supabase when the client opens their link — the URL stays clean (<b>?client=slug</b>), no hex exposed.</div>
     </div>
   </div>
 
   <!-- OUTPUT -->
   <div class="card" style="margin-top:22px">
     <h2>3 · Shareable client link</h2>
-    <div class="out">
-      <div class="urlbox">
-        <input type="text" id="url" readonly />
-        <button class="btn primary" id="copy">Copy link</button>
-      </div>
-      <div class="copied" id="copied">Copied to clipboard ✓</div>
-      <div class="btnrow">
-        <button class="btn" id="open">Open matrix ↗</button>
-      </div>
+    <div class="urlbox">
+      <input type="text" id="url" readonly />
+      <button class="btn primary" id="copy">Copy link</button>
     </div>
+    <div class="copied" id="copied">Copied to clipboard ✓</div>
+    <div class="btnrow"><button class="btn" id="open">Open matrix ↗</button></div>
   </div>
 
-  <footer><b>GTM<span class="o">·</span>Collective</b> · one tool, every client — generate a fresh link per engagement</footer>
+  <footer><b>GTM<span class="o">·</span>Collective</b> · one tool, every client — colors live in the database</footer>
 </div>
 
 <script>
-const PRESETS = [
-  {n:"Besedo",c:"01336E"},
-  {n:"Position Green",c:"003F39"},
-  {n:"Howspace",c:"492390"},
-  {n:"HubSpot",c:"FF7A59"},
-  {n:"Clay",c:"FB7232"},
-  {n:"Factors.ai",c:"FF2120"}
-];
+/* ===== Supabase (gtm-audit project) ===== */
+const SUPABASE_URL = 'https://ngrcyprtoesdvibfhjvx.supabase.co';
+const SUPABASE_ANON_KEY = 'PASTE_SUPABASE_ANON_KEY_HERE'; // anon public key: Supabase -> Project Settings -> API -> Project API keys -> anon public
+const configured = SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.startsWith('PASTE');
+const sb = configured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-const clientEl = document.getElementById('client');
-const hexEl = document.getElementById('hex');
-const pickerEl = document.getElementById('picker');
-const baseEl = document.getElementById('base');
-const urlEl = document.getElementById('url');
-const pvDot = document.getElementById('pvDot');
-const pvName = document.getElementById('pvName');
-const copiedEl = document.getElementById('copied');
+const $ = id => document.getElementById(id);
+const clientSelect=$('clientSelect'), newName=$('newName'), newColor=$('newColor'), newHex=$('newHex'),
+      saveBtn=$('saveBtn'), saveMsg=$('saveMsg'), addTitle=$('addTitle'),
+      urlEl=$('url'), pvDot=$('pvDot'), pvName=$('pvName'), copiedEl=$('copied'), banner=$('banner');
 
-// derive the tool base URL from where this generator is hosted (works when generate.html sits next to index.html)
-(function(){
-  let b = '';
-  if(location.protocol.startsWith('http')){
-    b = location.origin + location.pathname.replace(/generate\.html?$/i,'').replace(/\/$/,'');
-  }
-  baseEl.value = b || 'https://gtm-scoring-matrix.vercel.app';
-})();
+let clients=[], current=null;
 
+let BASE='';
+if(location.protocol.startsWith('http')){ BASE = location.origin + location.pathname.replace(/generate\.html?$/i,'').replace(/\/$/,''); }
+if(!BASE) BASE = 'https://account-scoring-rho.vercel.app';
+
+function slugify(s){ return (s||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); }
 function cleanHex(v){ return (v||'').replace(/[^0-9a-fA-F]/g,'').slice(0,6); }
+function showBanner(html){ banner.innerHTML=html; banner.classList.add('show'); }
+function msg(t,cls){ saveMsg.textContent=t; saveMsg.className='savemsg'+(cls?' '+cls:''); }
 
 function render(){
-  const client = clientEl.value.trim();
-  let hex = cleanHex(hexEl.value);
-  const full = hex.length===6 ? '#'+hex : '#01336E';
-
-  // sync swatch + preview brand
-  pickerEl.value = full;
+  const name = (current ? current.name : newName.value.trim()) || 'Client name';
+  const hex  = cleanHex(current ? current.brand : newHex.value) || '01336E';
+  const full = '#'+hex;
   document.documentElement.style.setProperty('--brand', full);
   document.documentElement.style.setProperty('--brand-soft', full+'22');
   pvDot.style.background = full;
-  pvDot.textContent = (client||'C').trim().charAt(0).toUpperCase();
-  pvName.textContent = client || 'Client name';
-
-  // build link
-  const base = baseEl.value.trim().replace(/\/+$/,'');
-  const params = new URLSearchParams();
-  if(client) params.set('client', client);
-  if(hex.length===6) params.set('brand', hex.toUpperCase());
-  urlEl.value = base + '/?' + params.toString();
+  pvDot.textContent = name.trim().charAt(0).toUpperCase();
+  pvName.textContent = name;
+  if(current){ urlEl.value = BASE + '/?client=' + encodeURIComponent(current.slug); }
+  else { urlEl.value = '— save the client to generate a link —'; }
 }
 
-clientEl.oninput = render;
-hexEl.oninput = render;
-baseEl.oninput = render;
-pickerEl.oninput = ()=>{ hexEl.value = pickerEl.value.replace('#','').toUpperCase(); render(); };
+function onSelect(){
+  const v = clientSelect.value;
+  if(v==='__new'){
+    current=null; addTitle.textContent='Add a new client'; saveBtn.textContent='Save client';
+    newName.value=''; newHex.value='01336E'; newColor.value='#01336E'; msg('');
+  } else {
+    current = clients.find(c=>c.slug===v) || null;
+    if(current){ addTitle.textContent='Edit this client'; saveBtn.textContent='Update client';
+      newName.value=current.name; newHex.value=current.brand; newColor.value='#'+cleanHex(current.brand); msg(''); }
+  }
+  render();
+}
 
-// preset swatches
-const sw = document.getElementById('swatches');
-PRESETS.forEach(p=>{
-  const d = document.createElement('div');
-  d.className='sw'; d.style.background='#'+p.c; d.title=p.n+' · #'+p.c;
-  d.onclick=()=>{ clientEl.value=p.n; hexEl.value=p.c; render(); };
-  sw.appendChild(d);
-});
+async function loadClients(selectSlug){
+  if(!sb) return;
+  const { data, error } = await sb.from('scoring_clients').select('*').order('name');
+  if(error){ showBanner('Could not load clients — '+error.message+'. Did you run the table SQL?'); return; }
+  clients = data || [];
+  clientSelect.innerHTML = '<option value="__new">➕ New client…</option>' +
+    clients.map(c=>'<option value="'+c.slug+'">'+c.name+'</option>').join('');
+  if(selectSlug){ clientSelect.value = selectSlug; }
+  onSelect();
+}
 
-document.getElementById('copy').onclick = ()=>{
-  urlEl.select();
-  navigator.clipboard.writeText(urlEl.value).then(showCopied).catch(()=>{ document.execCommand('copy'); showCopied(); });
-};
-function showCopied(){ copiedEl.classList.add('show'); setTimeout(()=>copiedEl.classList.remove('show'),1800); }
-document.getElementById('open').onclick = ()=> window.open(urlEl.value,'_blank');
+async function saveClient(){
+  if(!sb){ showConfigBanner(); return; }
+  const name = newName.value.trim();
+  const hex = cleanHex(newHex.value);
+  if(!name){ msg('Enter a client name','err'); return; }
+  if(hex.length!==6){ msg('Enter a 6-digit hex color','err'); return; }
+  const slug = slugify(name);
+  if(!slug){ msg('Name needs at least one letter or number','err'); return; }
+  saveBtn.disabled=true; msg('Saving…');
+  const { error } = await sb.from('scoring_clients').upsert({ slug, name, brand: hex.toUpperCase() }, { onConflict:'slug' });
+  saveBtn.disabled=false;
+  if(error){ msg('Error: '+error.message,'err'); return; }
+  msg('Saved ✓','ok');
+  await loadClients(slug);
+}
 
+function showConfigBanner(){
+  showBanner('<b>Supabase not configured.</b> Paste your anon public key into <code>SUPABASE_ANON_KEY</code> near the top of generate.html (and index.html), then re-upload. Find it in Supabase → Project Settings → API → Project API keys → <code>anon public</code>.');
+}
+
+// wire up
+clientSelect.onchange = onSelect;
+newName.oninput = ()=>{ if(!current) render(); };
+newHex.oninput = ()=>{ const h=cleanHex(newHex.value); newHex.value=h.toUpperCase(); if(h.length===6) newColor.value='#'+h; if(!current) render(); };
+newColor.oninput = ()=>{ newHex.value = newColor.value.replace('#','').toUpperCase(); if(!current) render(); };
+saveBtn.onclick = saveClient;
+$('copy').onclick = ()=>{ if(!current) return; urlEl.select(); navigator.clipboard.writeText(urlEl.value).then(()=>{copiedEl.classList.add('show');setTimeout(()=>copiedEl.classList.remove('show'),1800);}).catch(()=>{}); };
+$('open').onclick = ()=>{ if(current) window.open(urlEl.value,'_blank'); };
+
+if(!configured){ showConfigBanner(); }
 render();
+loadClients();
 </script>
 </body>
 </html>
