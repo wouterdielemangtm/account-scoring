@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --brand:#01336E;            /* client brand color, overridable via ?brand=HEX */
@@ -76,7 +77,10 @@
   .sec-head h2{font-size:16px;margin:0;text-transform:uppercase;letter-spacing:1.2px;}
   .sec-head .cnt{font-size:12px;color:var(--muted);font-weight:600;}
 
-  .list{background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+  .list{background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:visible;}
+  .list > .row:first-child{border-radius:16px 16px 0 0;}
+  .list > .row:last-child{border-radius:0 0 16px 16px;}
+  .list > .addrow:last-child{border-radius:0 0 16px 16px;}
   .row{display:grid;grid-template-columns:34px 1fr 150px 28px 96px 88px 40px;gap:12px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--line);}
   .row:last-child{border-bottom:none;}
   .row.sel{background:linear-gradient(90deg,var(--brand-soft),transparent 60%);}
@@ -226,17 +230,30 @@ const PROVIDERS = {                                  // provider -> brand color
 const COMPANY_SIGNALS = ["Event attendance","Headcount increase","Earnings report","Asset acquisition","Layoffs","Leadership content","Research intent level change","Competitor identified","Division spinoff","Office closure","Executive departure","Physical expansion","Client signing","Visitor intent update (website)","Key stakeholder identified","VC funding","Strategic investment","Company spinoff","Industry recognition","Valuation update","Product launch","Executive promotion","Lawsuit filing","Product development","Received technology investment","IPO","Product integration","Executive hiring","Strategic partnership","Bankruptcy filing","Budget mention","Executive retirement","Asset divestiture","Deal timing","Growth metrics","Partnership ended","M&A","Regulatory approval","Pain point","Geographic expansion","Revenue report",{name:"Bombora",provider:"Factors.ai"}];
 const CONTACT_SIGNALS = ["Opened marketing email","Replied to marketing email","Submitted form","Registered for marketing event","Attended marketing event","Visited any webpage","Visited use case page"];
 
-/* ---------- URL PARAMS (per-client branding) ---------- */
+/* ---------- BRANDING: Supabase per-client lookup ---------- */
+const SUPABASE_URL = 'https://ngrcyprtoesdvibfhjvx.supabase.co';
+const SUPABASE_ANON_KEY = 'PASTE_SUPABASE_ANON_KEY_HERE'; // anon public key: Supabase -> Project Settings -> API -> anon public
+
 const params = new URLSearchParams(location.search);
-const brand = params.get('brand');
-if(brand){ document.documentElement.style.setProperty('--brand', '#'+brand.replace('#','')); document.documentElement.style.setProperty('--brand-soft', '#'+brand.replace('#','')+'22'); }
-const clientParam = params.get('client');
-if(clientParam){
-  document.getElementById('clientName').textContent = clientParam;
-  document.getElementById('clientDot').textContent = clientParam.trim().charAt(0).toUpperCase();
-  document.title = clientParam + ' · Account Scoring Matrix';
+let CLIENT = (params.get('client') || document.getElementById('clientName').textContent || 'Client').trim();
+
+function applyBrand(hex){ if(!hex) return; const h = '#' + (''+hex).replace('#',''); document.documentElement.style.setProperty('--brand', h); document.documentElement.style.setProperty('--brand-soft', h+'22'); }
+function applyClient(name){ CLIENT = name; document.getElementById('clientName').textContent = name; document.getElementById('clientDot').textContent = (name||'C').trim().charAt(0).toUpperCase(); document.title = name + ' · Account Scoring Matrix'; }
+
+async function resolveClient(){
+  let brandHex = params.get('brand');            // optional ?brand= override still wins (handy for testing)
+  let name = params.get('client');
+  const slug = (params.get('client') || '').trim().toLowerCase();
+  if(slug && SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.startsWith('PASTE')){
+    try{
+      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const { data } = await sb.from('scoring_clients').select('name,brand').eq('slug', slug).maybeSingle();
+      if(data){ if(data.name) name = data.name; if(data.brand && !brandHex) brandHex = data.brand; }
+    }catch(e){ /* fall back to URL/default */ }
+  }
+  if(name) applyClient(name);
+  applyBrand(brandHex);
 }
-const CLIENT = document.getElementById('clientName').textContent;
 
 /* ---------- STATE ---------- */
 let uid = 0;
@@ -490,7 +507,8 @@ function init(){
   renderSection('contact', document.getElementById('contactList'));
   recompute();
 }
-init();
+async function boot(){ await resolveClient(); init(); }
+boot();
 </script>
 </body>
 </html>
