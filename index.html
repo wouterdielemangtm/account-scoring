@@ -230,6 +230,59 @@ const PROVIDERS = {                                  // provider -> brand color
 const COMPANY_SIGNALS = ["Event attendance","Headcount increase","Earnings report","Asset acquisition","Layoffs","Leadership content","Research intent level change","Competitor identified","Division spinoff","Office closure","Executive departure","Physical expansion","Client signing","Visitor intent update (website)","Key stakeholder identified","VC funding","Strategic investment","Company spinoff","Industry recognition","Valuation update","Product launch","Executive promotion","Lawsuit filing","Product development","Received technology investment","IPO","Product integration","Executive hiring","Strategic partnership","Bankruptcy filing","Budget mention","Executive retirement","Asset divestiture","Deal timing","Growth metrics","Partnership ended","M&A","Regulatory approval","Pain point","Geographic expansion","Revenue report",{name:"Bombora",provider:"Factors.ai"}];
 const CONTACT_SIGNALS = ["Opened marketing email","Replied to marketing email","Submitted form","Registered for marketing event","Attended marketing event","Visited any webpage","Visited use case page"];
 
+/* GTM Collective descriptions — pre-filled into each signal's GTM Collective comment */
+const DESCRIPTIONS = {
+  "Event attendance":"The account sent representatives to an industry event, conference or webinar — a marker of active category interest and a warm reason to reach out.",
+  "Headcount increase":"The company is hiring and growing its team, signalling expansion, fresh budget and new initiatives that often create buying needs.",
+  "Earnings report":"A published earnings release exposing financial health, priorities and spending capacity — useful for timing and tailoring outreach.",
+  "Asset acquisition":"The company acquired a significant asset (technology, property or IP), indicating investment appetite and potential new operational needs.",
+  "Layoffs":"The company reduced headcount — a sign of cost pressure or restructuring that can reshape priorities and shift decision-makers.",
+  "Leadership content":"A leader at the account published thought-leadership (posts, talks, articles), revealing strategic priorities and a natural engagement hook.",
+  "Research intent level change":"Third-party intent data shows a shift in how actively the account is researching your category — a rising level means they are moving in-market.",
+  "Competitor identified":"A competitor has been detected in the account (installed tech, mentions or engagement), signalling an active evaluation or a displacement opportunity.",
+  "Division spinoff":"The company spun a division into a separate entity, creating new org structures, budgets and buying centres to map.",
+  "Office closure":"The company closed a location — a restructuring signal that may shift priorities, contacts or regional focus.",
+  "Executive departure":"A senior leader left the company, often triggering strategy shifts, vendor reviews and the emergence of new decision-makers.",
+  "Physical expansion":"The company opened or expanded a physical location, signalling growth and new operational or regional needs.",
+  "Client signing":"The account publicly won or signed a notable new client, indicating momentum, growth and likely scaling needs.",
+  "Visitor intent update (website)":"First-party signal that people from the account visited your website — direct, current evidence of interest.",
+  "Key stakeholder identified":"A relevant decision-maker or influencer inside the account has been identified — the person to engage in the buying process.",
+  "VC funding":"The company raised venture capital, injecting fresh budget and growth mandates that frequently unlock new purchases.",
+  "Strategic investment":"The company received a strategic investment from a partner or corporate investor, signalling direction and new resources.",
+  "Company spinoff":"The company itself was spun off from a parent, forming a new entity with its own tech stack, budgets and decisions to make.",
+  "Industry recognition":"The account won an award or notable recognition — a credibility marker and a positive, natural outreach hook.",
+  "Valuation update":"The company's valuation changed materially, reflecting growth or repricing that can affect its spending capacity.",
+  "Product launch":"The account launched a new product, signalling active investment, a live go-to-market motion and possible supporting-tool needs.",
+  "Executive promotion":"Someone was promoted into a senior or decision-making role — a new stakeholder who may re-evaluate vendors and priorities.",
+  "Lawsuit filing":"The company is involved in litigation, which can indicate risk, distraction or shifting priorities to weigh when timing outreach.",
+  "Product development":"The account is actively developing a new product or feature, pointing to R&D investment and related tooling needs.",
+  "Received technology investment":"The company received funding or investment earmarked for technology, signalling budget for new tools and platforms.",
+  "IPO":"The company went (or is going) public, unlocking capital plus new operational, reporting and compliance needs.",
+  "Product integration":"The account added an integration or partner technology, revealing its stack and its openness to complementary tools.",
+  "Executive hiring":"The company hired a new senior leader, often bringing new mandates, preferred vendors and a window to influence direction.",
+  "Strategic partnership":"The account announced a partnership, signalling strategic direction and potentially new joint go-to-market needs.",
+  "Bankruptcy filing":"The company filed for bankruptcy or protection — a strong risk/disqualifying signal that should lower priority or pause outreach.",
+  "Budget mention":"A public or detected mention of budget allocation, indicating spending intent and a clear timing cue for outreach.",
+  "Executive retirement":"A senior leader is retiring, creating succession, new decision-makers and potential vendor re-evaluation.",
+  "Asset divestiture":"The company sold off an asset or business unit, reshaping its focus, structure and possibly its tooling needs.",
+  "Deal timing":"A signal about where the account sits in its buying or renewal cycle, helping prioritise outreach at the right moment.",
+  "Growth metrics":"Reported growth figures (revenue, users, ARR) reflecting scale and momentum — a proxy for expanding needs and budget.",
+  "Partnership ended":"A partnership was dissolved, which can free up budget, open a displacement gap or shift the account's strategy.",
+  "M&A":"The account is involved in a merger or acquisition — a major event that reshapes budgets, tech stacks and decision-makers.",
+  "Regulatory approval":"The company secured a regulatory approval (product, market entry, clearance), unblocking growth and related investment.",
+  "Pain point":"A detected or stated pain point that maps to your solution — the strongest qualitative hook for relevant, timely outreach.",
+  "Geographic expansion":"The company is entering a new region or market, creating localisation, operational and tooling needs.",
+  "Revenue report":"A reported revenue figure or update reflecting financial performance — useful for prioritisation and messaging.",
+  "Bombora":"Bombora Company Surge intent data (surfaced via Factors.ai) showing the account is consuming content on topics tied to your category — evidence they are actively in-market.",
+  "Opened marketing email":"A contact opened one of your marketing emails — a light engagement signal of attention and awareness.",
+  "Replied to marketing email":"A contact replied to a marketing email — a strong, direct engagement signal that warrants fast follow-up.",
+  "Submitted form":"A contact completed a form (demo, content or contact) — a high-intent, hand-raising action.",
+  "Registered for marketing event":"A contact registered for a webinar or event, showing topical interest and intent to engage.",
+  "Attended marketing event":"A contact actually attended your event or webinar — deeper engagement than registration alone.",
+  "Visited any webpage":"A contact visited a page on your site, indicating active, current interest worth acting on.",
+  "Visited use case page":"A contact viewed a specific use-case or solution page — a higher-intent visit signalling they are evaluating fit."
+};
+
 /* ---------- BRANDING: Supabase per-client lookup ---------- */
 const SUPABASE_URL = 'https://ngrcyprtoesdvibfhjvx.supabase.co';
 const SUPABASE_ANON_KEY = 'PASTE_SUPABASE_ANON_KEY_HERE'; // anon public key: Supabase -> Project Settings -> API -> anon public
@@ -258,7 +311,7 @@ async function resolveClient(){
 /* ---------- STATE ---------- */
 let uid = 0;
 function mk(name, side){ return {id:++uid, name, side, provider:"HubSpot", weight:"med", on:false, client:"", gtm:"", custom:false, el:null, pointsEl:null, barEl:null}; }
-function mkFrom(x, side){ const s = mk(typeof x==='string'?x:x.name, side); if(typeof x!=='string' && x.provider) s.provider = x.provider; return s; }
+function mkFrom(x, side){ const name = typeof x==='string'?x:x.name; const s = mk(name, side); if(typeof x!=='string' && x.provider) s.provider = x.provider; s.gtm = DESCRIPTIONS[name] || ''; return s; }
 const state = {
   company: COMPANY_SIGNALS.map(x=>mkFrom(x,'company')),
   contact: CONTACT_SIGNALS.map(x=>mkFrom(x,'contact'))
@@ -297,11 +350,11 @@ function buildRow(s){
     <div class="notes">
       <div class="note">
         <label><span class="tag" style="background:var(--brand)"></span>${CLIENT} notes</label>
-        <textarea class="cnote" placeholder="Write your question or comment here!">${s.client}</textarea>
+        <textarea class="cnote" placeholder="Write your question or comment here!"></textarea>
       </div>
       <div class="note">
         <label><span class="tag" style="background:var(--gtm)"></span>GTM Collective notes</label>
-        <textarea class="gnote" placeholder="Our recommendation / rationale…">${s.gtm}</textarea>
+        <textarea class="gnote" placeholder="Our recommendation / rationale…"></textarea>
       </div>
     </div>`;
 
@@ -350,8 +403,10 @@ function buildRow(s){
 
   noteBtn.onclick = ()=> notes.classList.toggle('open');
   if(rmBtn) rmBtn.onclick = ()=> removeSignal(s);
-  row.querySelector('.cnote').oninput = e=> s.client = e.target.value;
-  row.querySelector('.gnote').oninput = e=> s.gtm = e.target.value;
+  const cnote = row.querySelector('.cnote'), gnote = row.querySelector('.gnote');
+  cnote.value = s.client; gnote.value = s.gtm;
+  cnote.oninput = e=> s.client = e.target.value;
+  gnote.oninput = e=> s.gtm = e.target.value;
 
   return row;
 }
@@ -491,7 +546,7 @@ function importJSON(e){
     if(d.providers) Object.assign(PROVIDERS,d.providers);
     ['company','contact'].forEach(side=>{
       if(!Array.isArray(d[side])) return;
-      state[side]=d[side].map(o=>{const s=mk(o.name,side); s.provider=o.provider||'HubSpot'; s.weight=o.weight||'med'; s.on=!!o.on; s.client=o.client||''; s.gtm=o.gtm||''; s.custom=!!o.custom; return s;});
+      state[side]=d[side].map(o=>{const s=mk(o.name,side); s.provider=o.provider||'HubSpot'; s.weight=o.weight||'med'; s.on=!!o.on; s.client=o.client||''; s.gtm=o.gtm||DESCRIPTIONS[o.name]||''; s.custom=!!o.custom; return s;});
     });
     init();
   }catch(err){ alert('Could not read that file.'); } };
