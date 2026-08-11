@@ -170,7 +170,7 @@
 <script>
 /* ===== Supabase (gtm-audit project) ===== */
 const SUPABASE_URL = 'https://ngrcyprtoesdvibfhjvx.supabase.co';
-const SUPABASE_ANON_KEY = 'PASTE_SUPABASE_ANON_KEY_HERE'; // anon public key: Supabase -> Project Settings -> API -> Project API keys -> anon public
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ncmN5cHJ0b2VzZHZpYmZoanZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3Mjc3NTksImV4cCI6MjA5NTMwMzc1OX0.vVDB-wdRu41GiIo5sX6KIcJIs30Ey7974azJaMDpLDU'; // anon public key: Supabase -> Project Settings -> API -> Project API keys -> anon public
 const configured = SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.startsWith('PASTE');
 const sb = configured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
