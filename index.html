@@ -53,6 +53,11 @@
   .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff;}
   .btn.primary:hover{filter:brightness(.95);color:#fff;}
   .btn.ghost{background:transparent;}
+  .status{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--muted);}
+  .status .sdot{width:8px;height:8px;border-radius:50%;background:var(--muted-2);flex:none;}
+  .status.ok .sdot{background:#1E9E6A;} .status.ok{color:#1E9E6A;}
+  .status.saving .sdot{background:var(--gtm);} .status.saving{color:var(--gtm);}
+  .status.err .sdot{background:var(--rm);} .status.err{color:var(--rm);}
 
   .section{margin-bottom:26px;}
   .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 4px 10px;flex-wrap:wrap;}
@@ -171,6 +176,7 @@
     <button class="btn ghost" onclick="document.getElementById('importer').click()">⤒ Import config</button>
     <input type="file" id="importer" accept="application/json" style="display:none" onchange="importJSON(event)" />
     <button class="btn ghost" onclick="resetAll()">↺ Reset</button>
+    <span class="status" id="status"><span class="sdot"></span><span class="stxt">Connecting…</span></span>
   </div>
 
   <div id="sections"></div>
@@ -357,22 +363,22 @@ function buildRow(s){
           const n=(prompt('Provider name:','')||'').trim();
           if(n){ const hex=(prompt('Brand color hex (e.g. 3B82F6):','3B82F6')||'').trim().replace('#',''); PROVIDERS[n]='#'+(hex||'888888'); s.provider=n; refreshProviders(); }
         } else s.provider=o.dataset.p;
-        paintProv(); provMenu.classList.remove('open');
+        paintProv(); provMenu.classList.remove('open'); touch();
       };
     });
   }
   s._buildMenu=buildMenu; s._paintProv=paintProv;
   paintToggle(); buildMenu(); paintProv();
 
-  toggle.onclick=()=>{ s.on=!s.on; paintToggle(); updateCounts(); };
+  toggle.onclick=()=>{ s.on=!s.on; paintToggle(); updateCounts(); touch(); };
   provBtn.onclick=ev=>{ ev.stopPropagation(); const open=provMenu.classList.contains('open'); closeAllMenus(); if(!open) provMenu.classList.add('open'); };
-  wt.onchange=()=>{ s.weight=wt.value; paintWeight(wt,s.weight); updateCounts(); };
-  cr.onchange=()=>{ s.credit=cr.value; };
+  wt.onchange=()=>{ s.weight=wt.value; paintWeight(wt,s.weight); updateCounts(); touch(); };
+  cr.onchange=()=>{ s.credit=cr.value; touch(); };
   row.querySelector('.note-btn').onclick=()=>panel.classList.toggle('open');
   row.querySelector('.rm-btn').onclick=()=>removeItem(s);
-  ctx.oninput=e=>s.context=e.target.value;
-  cnote.oninput=e=>s.client=e.target.value;
-  gnote.oninput=e=>s.gtm=e.target.value;
+  ctx.oninput=e=>{ s.context=e.target.value; touch(); };
+  cnote.oninput=e=>{ s.client=e.target.value; touch(); };
+  gnote.oninput=e=>{ s.gtm=e.target.value; touch(); };
   return row;
 }
 
@@ -404,7 +410,7 @@ function buildAdder(secKey,noun,listEl){
     refreshProviders();
     w.querySelector('.a-name').value=''; w.querySelector('.a-cpname').value='';
     aprov.value='HubSpot'; custom.classList.remove('show'); w.querySelector('.a-wt').value='med'; w.querySelector('.a-cr').value='na';
-    updateCounts();
+    updateCounts(); touch();
   };
   return w;
 }
@@ -427,7 +433,7 @@ function refreshProviders(){
   SECTIONS.forEach(sec=>state[sec.key].forEach(s=>{ if(s._buildMenu) s._buildMenu(); if(s._paintProv) s._paintProv(); }));
   document.querySelectorAll('.a-prov').forEach(sel=>{ const c=sel.value; sel.innerHTML=providerOptions(c); if([...sel.options].some(o=>o.value===c)) sel.value=c; });
 }
-function removeItem(s){ const arr=state[s.sec], i=arr.indexOf(s); if(i>-1) arr.splice(i,1); if(s.el) s.el.remove(); updateCounts(); }
+function removeItem(s){ const arr=state[s.sec], i=arr.indexOf(s); if(i>-1) arr.splice(i,1); if(s.el) s.el.remove(); updateCounts(); touch(); }
 function closeAllMenus(){ document.querySelectorAll('.provmenu.open').forEach(m=>m.classList.remove('open')); }
 document.addEventListener('click',closeAllMenus);
 
@@ -469,11 +475,11 @@ function importJSON(e){
         s.provider=o.provider||'HubSpot'; s.weight=o.weight||'med'; s.credit=o.credit||'na';
         s.on=!!o.on; s.context=o.context||''; s.client=o.client||''; s.gtm=o.gtm||DESCRIPTIONS[o.name]||''; s.custom=!!o.custom; return s; });
     });
-    renderAll();
+    renderAll(); touch();
   }catch(err){ alert('Could not read that file.'); } };
   r.readAsText(f); e.target.value='';
 }
-function resetAll(){ if(!confirm('Reset all selections, priorities and context?')) return; uid=0; seed(); renderAll(); }
+function resetAll(){ if(!confirm('Reset all selections, priorities and context?')) return; uid=0; seed(); renderAll(); touch(); }
 function exportPDF(){
   const el=document.getElementById('sheet');
   document.querySelectorAll('.toolbar,.addrow').forEach(t=>t.style.display='none');
@@ -482,8 +488,81 @@ function exportPDF(){
     .from(el).save().then(()=>{ document.querySelectorAll('.toolbar').forEach(t=>t.style.display='flex'); document.querySelectorAll('.addrow').forEach(t=>t.style.display='block'); });
 }
 
+/* ================= PERSISTENCE (autosave + realtime) ================= */
+const SLUG = (params.get('client')||'').trim().toLowerCase();
+const TAB_ID = Math.random().toString(36).slice(2)+Date.now().toString(36);
+let sbc=null, saveTimer=null, applyingRemote=false, pendingRemote=null;
+
+function setStatus(cls,txt){ const e=document.getElementById('status'); if(!e) return; e.className='status'+(cls?' '+cls:''); e.querySelector('.stxt').textContent=txt; }
+
+function serialize(){
+  const out={};
+  SECTIONS.forEach(sec=> out[sec.key]=state[sec.key].map(s=>({name:s.name,provider:s.provider,weight:s.weight,credit:s.credit,on:s.on,context:s.context,client:s.client,gtm:s.gtm,custom:s.custom})) );
+  return out;
+}
+function deserialize(d){
+  if(!d) return false;
+  applyingRemote=true; uid=0;
+  SECTIONS.forEach(sec=>{
+    if(!Array.isArray(d[sec.key])) return;
+    state[sec.key]=d[sec.key].map(o=>{ const s=mk(o.name,sec.key);
+      s.provider=o.provider||'HubSpot'; s.weight=o.weight||'med'; s.credit=o.credit||'na';
+      s.on=!!o.on; s.context=o.context||''; s.client=o.client||''; s.gtm=(o.gtm!==undefined?o.gtm:(DESCRIPTIONS[o.name]||'')); s.custom=!!o.custom; return s; });
+  });
+  renderAll(); applyingRemote=false; return true;
+}
+function isTyping(){ const a=document.activeElement; return a && (a.tagName==='TEXTAREA' || a.tagName==='INPUT'); }
+
+function touch(){
+  if(applyingRemote || !sbc || !SLUG) return;
+  setStatus('saving','Saving…');
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveState,900);
+}
+async function saveState(){
+  if(!sbc || !SLUG) return;
+  try{
+    const { error } = await sbc.from('scoring_state').upsert({ slug:SLUG, data:serialize(), updated_by:TAB_ID, updated_at:new Date().toISOString() },{ onConflict:'slug' });
+    if(error) throw error;
+    setStatus('ok','Saved ✓');
+  }catch(e){ setStatus('err','Not saved — '+(e.message||'error')); }
+}
+async function loadState(){
+  if(!sbc || !SLUG) return;
+  try{
+    const { data, error } = await sbc.from('scoring_state').select('data').eq('slug',SLUG).maybeSingle();
+    if(error) throw error;
+    if(data && data.data) deserialize(data.data);
+    setStatus('ok','Saved ✓');
+  }catch(e){ setStatus('err','Could not load — '+(e.message||'error')); }
+}
+function subscribeRealtime(){
+  if(!sbc || !SLUG) return;
+  sbc.channel('scoring_state_'+SLUG)
+    .on('postgres_changes',{event:'*',schema:'public',table:'scoring_state',filter:'slug=eq.'+SLUG},payload=>{
+      const row=payload.new; if(!row || row.updated_by===TAB_ID) return;
+      if(isTyping()){ pendingRemote=row.data; setStatus('saving','Update waiting…'); return; }
+      deserialize(row.data); setStatus('ok','Updated from another session');
+      setTimeout(()=>setStatus('ok','Saved ✓'),2500);
+    }).subscribe();
+}
+document.addEventListener('focusout',()=>{ setTimeout(()=>{ if(pendingRemote && !isTyping()){ deserialize(pendingRemote); pendingRemote=null; setStatus('ok','Updated from another session'); setTimeout(()=>setStatus('ok','Saved ✓'),2500);} },150); });
+window.addEventListener('beforeunload',()=>{ if(saveTimer){ clearTimeout(saveTimer); } });
+
 /* ================= BOOT ================= */
-async function boot(){ await resolveClient(); renderAll(); }
+async function boot(){
+  await resolveClient();
+  renderAll();
+  if(SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.startsWith('PASTE') && SLUG){
+    try{
+      sbc = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      await loadState();
+      subscribeRealtime();
+    }catch(e){ setStatus('err','Offline — changes not saved'); }
+  } else {
+    setStatus('', SLUG ? 'Not connected' : 'Preview mode — not saved');
+  }
+}
 boot();
 </script>
 </body>
