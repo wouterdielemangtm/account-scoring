@@ -11,30 +11,16 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
-    --brand:#01336E;            /* client brand color, overridable via ?brand=HEX */
-    --brand-soft:#01336E22;
-    --ink:#120E19;              /* GTM Collective primary */
-    --gtm:#F87B22;              /* GTM Collective secondary */
-    --paper:#FFFFFF;
-    --bg:#F5F4F7;
-    --line:#E7E4EC;
-    --muted:#6B6577;
-    --muted-2:#9A93A6;
-    --ok:#1E9E6A;
+    --brand:#01336E;--brand-soft:#01336E22;--ink:#120E19;--gtm:#F87B22;
+    --paper:#FFFFFF;--bg:#F5F4F7;--line:#E7E4EC;--muted:#6B6577;--muted-2:#9A93A6;
+    --hi:#01336E;--md:#6B87AE;--lo:#C3CEDD;--rm:#D64545;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  body{
-    font-family:'DM Sans',system-ui,-apple-system,Segoe UI,sans-serif;
-    background:var(--bg);
-    color:var(--ink);
-    line-height:1.45;
-    -webkit-font-smoothing:antialiased;
-  }
-  h1,h2,h3,.brandface{font-family:'Century Gothic','Futura','DM Sans',sans-serif;letter-spacing:.2px;}
-  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 80px;}
+  body{font-family:'DM Sans',system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Century Gothic','Futura','DM Sans',sans-serif;letter-spacing:.2px;}
+  .wrap{max-width:1120px;margin:0 auto;padding:28px 20px 80px;}
 
-  /* Header */
   .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px;}
   .client{display:flex;align-items:center;gap:14px;}
   .client .dot{width:42px;height:42px;border-radius:11px;background:var(--brand);flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-family:'Century Gothic','Futura',sans-serif;font-size:20px;}
@@ -44,26 +30,23 @@
   .gtmmark b{color:var(--ink);}
   .gtmmark .o{color:var(--gtm);}
 
-  /* Summary card */
-  .summary{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:20px 22px;box-shadow:0 1px 0 rgba(18,14,25,.03);margin-bottom:22px;}
+  .summary{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:20px 22px;margin-bottom:20px;}
   .summary-top{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;}
   .total{display:flex;align-items:baseline;gap:10px;}
-  .total .num{font-family:'Century Gothic','Futura',sans-serif;font-size:54px;font-weight:700;line-height:1;color:var(--ink);}
-  .total .den{font-size:20px;color:var(--muted-2);font-weight:600;}
-  .total .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-left:8px;}
+  .total .num{font-family:'Century Gothic','Futura',sans-serif;font-size:50px;font-weight:700;line-height:1;}
+  .total .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
   .subs{display:flex;gap:26px;}
   .subs .s{text-align:right;}
-  .subs .s .v{font-size:24px;font-weight:700;font-family:'Century Gothic','Futura',sans-serif;}
+  .subs .s .v{font-size:23px;font-weight:700;font-family:'Century Gothic','Futura',sans-serif;}
   .subs .s .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
   .splitbar{height:12px;border-radius:8px;background:var(--line);overflow:hidden;display:flex;margin-top:16px;}
-  .splitbar .co{background:var(--brand);height:100%;transition:width .25s ease;}
-  .splitbar .ct{background:var(--ink);height:100%;transition:width .25s ease;}
+  .splitbar i{height:100%;transition:width .25s ease;display:block;}
   .legend{display:flex;gap:18px;margin-top:10px;font-size:12px;color:var(--muted);flex-wrap:wrap;}
   .legend .i{display:flex;align-items:center;gap:6px;}
   .legend .sw{width:10px;height:10px;border-radius:3px;}
-  .hint{font-size:12.5px;color:var(--muted-2);margin-top:8px;}
+  .hint{font-size:12.5px;color:var(--muted-2);margin-top:10px;line-height:1.5;}
+  .hint b{color:var(--muted);}
 
-  /* Toolbar */
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px;}
   .btn{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:10px;padding:9px 14px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.15s;}
   .btn:hover{border-color:var(--brand);color:var(--brand);}
@@ -71,36 +54,27 @@
   .btn.primary:hover{filter:brightness(.95);color:#fff;}
   .btn.ghost{background:transparent;}
 
-  /* Section */
   .section{margin-bottom:26px;}
-  .sec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 4px 10px;}
-  .sec-head h2{font-size:16px;margin:0;text-transform:uppercase;letter-spacing:1.2px;}
+  .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 4px 10px;flex-wrap:wrap;}
+  .sec-head h2{font-size:15px;margin:0;text-transform:uppercase;letter-spacing:1.2px;}
+  .sec-head .ss{font-size:12px;color:var(--muted-2);margin-left:10px;text-transform:none;letter-spacing:0;font-weight:500;}
   .sec-head .cnt{font-size:12px;color:var(--muted);font-weight:600;}
 
   .list{background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:visible;}
-  .list > .row:first-child{border-radius:16px 16px 0 0;}
-  .list > .row:last-child{border-radius:0 0 16px 16px;}
-  .list > .addrow:last-child{border-radius:0 0 16px 16px;}
-  .row{display:grid;grid-template-columns:34px 1fr 150px 28px 96px 88px 40px;gap:12px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--line);}
-  .row:last-child{border-bottom:none;}
-  .row.sel{background:linear-gradient(90deg,var(--brand-soft),transparent 60%);}
-  .row .name{display:flex;flex-direction:column;gap:5px;min-width:0;}
-  .row .nm{font-weight:600;font-size:14.5px;}
-  .row .bar{height:5px;border-radius:4px;background:var(--line);overflow:hidden;}
-  .row .bar i{display:block;height:100%;width:0;background:var(--brand);transition:width .25s ease;}
-  .actions{display:flex;gap:2px;align-items:center;justify-content:flex-end;}
-  .rm-btn{color:#D64545;}
-  .rm-btn:hover{background:#D6454515;}
+  .hrow,.row{display:grid;grid-template-columns:34px 1fr 148px 28px 108px 104px 40px;gap:12px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--line);}
+  .hrow{padding:9px 16px;background:#FBFAFC;border-radius:16px 16px 0 0;}
+  .hrow span{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted-2);}
+  .row:last-child{border-bottom:none;border-radius:0 0 16px 16px;}
+  .row.sel{background:linear-gradient(90deg,var(--brand-soft),transparent 62%);}
+  .row .nm{font-weight:600;font-size:14.5px;min-width:0;}
 
-  /* select toggle */
   .toggle{width:24px;height:24px;border-radius:7px;border:2px solid var(--line);background:#fff;cursor:pointer;position:relative;flex:none;transition:.15s;}
   .toggle:hover{border-color:var(--brand);}
   .toggle.on{background:var(--brand);border-color:var(--brand);}
   .toggle.on::after{content:"";position:absolute;left:7px;top:3px;width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg);}
 
-  /* provider dropdown (color-visible) */
   .prov{position:relative;}
-  .provbtn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:5px 10px;background:#fff;cursor:pointer;font:inherit;font-size:12px;font-weight:600;color:var(--ink);max-width:150px;width:100%;}
+  .provbtn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:5px 10px;background:#fff;cursor:pointer;font:inherit;font-size:12px;font-weight:600;color:var(--ink);width:100%;}
   .provbtn:hover{border-color:var(--brand);}
   .provbtn .swatch{width:10px;height:10px;border-radius:50%;flex:none;}
   .provbtn .pname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -112,51 +86,47 @@
   .provopt .dot{width:11px;height:11px;border-radius:50%;flex:none;}
   .provopt.custom{color:var(--muted);border-top:1px solid var(--line);margin-top:4px;padding-top:10px;}
 
-  /* weight select */
-  select.wt{appearance:none;-webkit-appearance:none;border:1px solid var(--line);border-radius:9px;padding:7px 26px 7px 11px;font-family:inherit;font-size:13px;font-weight:600;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%239A93A6'/></svg>") no-repeat right 10px center;cursor:pointer;width:100%;color:var(--ink);}
-  select.wt[data-w="high"]{border-color:var(--brand);color:var(--brand);}
-  select.wt[data-w="low"]{color:var(--muted);}
-
-  .pts{text-align:right;font-weight:700;font-family:'Century Gothic','Futura',sans-serif;font-size:18px;white-space:nowrap;}
-  .pts small{font-size:11px;color:var(--muted-2);font-weight:600;font-family:'DM Sans';}
+  select.sel2{appearance:none;-webkit-appearance:none;border:1px solid var(--line);border-radius:9px;padding:7px 24px 7px 10px;font-family:inherit;font-size:12.5px;font-weight:600;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%239A93A6'/></svg>") no-repeat right 9px center;cursor:pointer;width:100%;color:var(--ink);}
 
   .icbtn{border:none;background:transparent;cursor:pointer;color:var(--muted-2);font-size:16px;padding:4px;border-radius:8px;line-height:1;}
   .icbtn:hover{color:var(--brand);background:var(--brand-soft);}
+  .rm-btn{color:var(--rm);}
+  .rm-btn:hover{color:var(--rm);background:#D6454515;}
 
-  /* notes panel */
-  .notes{grid-column:1 / -1;display:none;gap:14px;padding:6px 2px 8px;}
-  .notes.open{display:grid;grid-template-columns:1fr 1fr;}
-  .note{display:flex;flex-direction:column;gap:5px;}
-  .note label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:6px;color:var(--muted);}
-  .note label .tag{width:8px;height:8px;border-radius:2px;}
-  .note textarea{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-family:inherit;font-size:13px;resize:vertical;min-height:54px;background:#FCFBFD;color:var(--ink);}
-  .note textarea:focus{outline:none;border-color:var(--brand);}
+  .panel{grid-column:1 / -1;display:none;flex-direction:column;gap:14px;padding:8px 2px 10px;}
+  .panel.open{display:flex;}
+  .fieldlab{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:6px;color:var(--muted);margin-bottom:5px;}
+  .fieldlab .tag{width:8px;height:8px;border-radius:2px;}
+  .ctxwrap input{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-family:inherit;font-size:13px;background:#FCFBFD;color:var(--ink);}
+  .ctxwrap input:focus{outline:none;border-color:var(--brand);}
+  .notes2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .notes2 textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-family:inherit;font-size:13px;resize:vertical;min-height:64px;background:#FCFBFD;color:var(--ink);}
+  .notes2 textarea:focus{outline:none;border-color:var(--brand);}
 
-  /* add-signal form */
-  .addrow{padding:14px 16px;background:#FBFAFC;border-top:1px dashed var(--line);}
+  .addrow{padding:14px 16px;background:#FBFAFC;border-top:1px dashed var(--line);border-radius:0 0 16px 16px;}
   .addrow.collapsed .addform{display:none;}
   .add-toggle{font-size:13px;font-weight:600;color:var(--brand);background:none;border:none;cursor:pointer;display:inline-flex;gap:7px;align-items:center;padding:0;}
-  .addform{display:grid;grid-template-columns:1fr 160px 120px auto;gap:10px;align-items:end;margin-top:12px;}
+  .addform{display:grid;grid-template-columns:1fr 150px 120px 110px auto;gap:10px;align-items:end;margin-top:12px;}
   .addform .f{display:flex;flex-direction:column;gap:4px;}
   .addform label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
-  .addform input[type=text], .addform select{border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-family:inherit;font-size:13px;background:#fff;color:var(--ink);}
+  .addform input[type=text],.addform select{border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-family:inherit;font-size:13px;background:#fff;color:var(--ink);}
   .addform input[type=color]{width:38px;height:38px;border:1px solid var(--line);border-radius:9px;padding:2px;background:#fff;cursor:pointer;}
   .custom-prov{display:none;gap:8px;align-items:end;}
   .custom-prov.show{display:flex;}
 
-  footer{text-align:center;color:var(--muted-2);font-size:12px;margin-top:34px;}
+  footer{text-align:center;color:var(--muted-2);font-size:12px;margin-top:34px;line-height:1.6;}
   footer b{color:var(--ink);}
   footer .o{color:var(--gtm);}
 
-  @media(max-width:760px){
-    .row{grid-template-columns:30px 1fr 84px;grid-auto-rows:auto;row-gap:10px;}
+  @media(max-width:820px){
+    .hrow{display:none;}
+    .row{grid-template-columns:30px 1fr 34px 40px;row-gap:10px;}
     .row .prov{grid-column:2 / -1;}
-    .row .pts{grid-column:2;text-align:left;}
-    .row .actions{grid-column:3;justify-self:end;}
-    .notes.open{grid-template-columns:1fr;}
+    .row .wt,.row .cr{grid-column:span 2;}
+    .notes2{grid-template-columns:1fr;}
     .addform{grid-template-columns:1fr;}
-    .subs{gap:18px;}
-    .total .num{font-size:42px;}
+    .total .num{font-size:40px;}
+    .subs{gap:16px;}
   }
 </style>
 </head>
@@ -168,7 +138,7 @@
       <div class="dot" id="clientDot">B</div>
       <div>
         <h1 id="clientName">Besedo</h1>
-        <div class="sub">Account Scoring Matrix · HubSpot signal weighting</div>
+        <div class="sub">Account Scoring Matrix · signal selection &amp; prioritisation</div>
       </div>
     </div>
     <div class="gtmmark">Built by <b>GTM<span class="o">·</span>Collective</b><br/>gtmcollective.ai</div>
@@ -177,23 +147,22 @@
   <div class="summary">
     <div class="summary-top">
       <div class="total">
-        <span class="num" id="totalNum">0</span>
-        <span class="den">/ 100</span>
-        <span class="lbl">points allocated</span>
+        <span class="num" id="selCount">0</span>
+        <span class="lbl">criteria selected</span>
       </div>
       <div class="subs">
-        <div class="s"><div class="v" id="coSub" style="color:var(--brand)">0</div><div class="k">Company</div></div>
-        <div class="s"><div class="v" id="ctSub" style="color:var(--ink)">0</div><div class="k">Contact</div></div>
-        <div class="s"><div class="v" id="selCount">0</div><div class="k">Signals on</div></div>
+        <div class="s"><div class="v" id="hiCnt" style="color:var(--hi)">0</div><div class="k">High</div></div>
+        <div class="s"><div class="v" id="mdCnt" style="color:var(--md)">0</div><div class="k">Medium</div></div>
+        <div class="s"><div class="v" id="loCnt" style="color:var(--lo)">0</div><div class="k">Low</div></div>
       </div>
     </div>
-    <div class="splitbar"><div class="co" id="coBar" style="width:0"></div><div class="ct" id="ctBar" style="width:0"></div></div>
+    <div class="splitbar"><i id="hiBar" style="background:var(--hi);width:0"></i><i id="mdBar" style="background:var(--md);width:0"></i><i id="loBar" style="background:var(--lo);width:0"></i></div>
     <div class="legend">
-      <div class="i"><span class="sw" style="background:var(--brand)"></span> Company signals</div>
-      <div class="i"><span class="sw" style="background:var(--ink)"></span> Contact signals</div>
-      <div class="i"><span class="sw" style="background:var(--line)"></span> Unallocated</div>
+      <div class="i"><span class="sw" style="background:var(--hi)"></span> High priority</div>
+      <div class="i"><span class="sw" style="background:var(--md)"></span> Medium</div>
+      <div class="i"><span class="sw" style="background:var(--lo)"></span> Low</div>
     </div>
-    <div class="hint">The 100 points always redistribute across the signals you switch <b>on</b>, weighted by impact (Low · Medium · High). Turn signals on/off or change weights and the split rebalances live.</div>
+    <div class="hint">This matrix selects and prioritises <b>which</b> criteria matter and <b>why</b> — it does not produce a score. Point weighting, thresholds, group caps and decay are configured in <b>HubSpot</b>, where scoring actually runs. Use the context field to capture the configuration behind each criterion, and the credit column to flag Breeze consumption.</div>
   </div>
 
   <div class="toolbar">
@@ -204,34 +173,36 @@
     <button class="btn ghost" onclick="resetAll()">↺ Reset</button>
   </div>
 
-  <div class="section">
-    <div class="sec-head"><h2>Company signals</h2><span class="cnt" id="coCnt">0 of 0 on</span></div>
-    <div class="list" id="companyList"></div>
-  </div>
+  <div id="sections"></div>
 
-  <div class="section">
-    <div class="sec-head"><h2>Contact signals</h2><span class="cnt" id="ctCnt">0 of 0 on</span></div>
-    <div class="list" id="contactList"></div>
-  </div>
-
-  <footer>Account Scoring Matrix · <b>GTM<span class="o">·</span>Collective</b> · weighting model: Low 1 · Medium 3 · High 5</footer>
+  <footer>Account Scoring Matrix · <b>GTM<span class="o">·</span>Collective</b><br/>Priority is qualitative. Scoring is configured, switched on, analysed and tuned in HubSpot — this list is a starting point, not a final model.</footer>
 </div>
 
 <script>
-/* ---------- CONFIG ---------- */
-const WEIGHTS = { low:1, med:3, high:5 };           // tune the weighting model here
-const PROVIDERS = {                                  // provider -> brand color
-  "HubSpot":"#FF7A59",
-  "Clay":"#FB7232",
-  "Claude Code":"#DA7756",
-  "Factors.ai":"#FF2120"
-};
+/* ================= CONFIG ================= */
+const PROVIDERS = { "HubSpot":"#FF7A59", "Clay":"#FB7232", "Claude Code":"#DA7756", "Factors.ai":"#FF2120" };
+const CREDIT_OPTS = [["na","— not set"],["none","No credits"],["low","Low"],["med","Medium"],["high","High"]];
 
-const COMPANY_SIGNALS = ["Event attendance","Headcount increase","Earnings report","Asset acquisition","Layoffs","Leadership content","Research intent level change","Competitor identified","Division spinoff","Office closure","Executive departure","Physical expansion","Client signing","Visitor intent update (website)","Key stakeholder identified","VC funding","Strategic investment","Company spinoff","Industry recognition","Valuation update","Product launch","Executive promotion","Lawsuit filing","Product development","Received technology investment","IPO","Product integration","Executive hiring","Strategic partnership","Bankruptcy filing","Budget mention","Executive retirement","Asset divestiture","Deal timing","Growth metrics","Partnership ended","M&A","Regulatory approval","Pain point","Geographic expansion","Revenue report",{name:"Bombora",provider:"Factors.ai"}];
-const CONTACT_SIGNALS = ["Opened marketing email","Replied to marketing email","Submitted form","Registered for marketing event","Attended marketing event","Visited any webpage","Visited use case page"];
+const SECTIONS = [
+  { key:"companyFit", title:"Company · ICP fit", sub:"Firmographics &amp; account structure — who they are", noun:"fit criterion",
+    items:["Industry / vertical","Company size (headcount band)","Revenue band","Region / country","Business model (B2B / B2C / marketplace)","Growth stage / funding stage","Tech stack indicators","Buying committee coverage (DMU mapped)"] },
+  { key:"companySignals", title:"Company · signals", sub:"Behavioural &amp; event-based — what they do", noun:"company signal",
+    items:["Event attendance","Headcount increase","Earnings report","Asset acquisition","Layoffs","Leadership content","Research intent level change","Competitor identified","Division spinoff","Office closure","Executive departure","Physical expansion","Client signing","Visitor intent update (website)","Key stakeholder identified","VC funding","Strategic investment","Company spinoff","Industry recognition","Valuation update","Product launch","Executive promotion","Lawsuit filing","Product development","Received technology investment","IPO","Product integration","Executive hiring","Strategic partnership","Bankruptcy filing","Budget mention","Executive retirement","Asset divestiture","Deal timing","Growth metrics","Partnership ended","M&A","Regulatory approval","Pain point","Geographic expansion","Revenue report",{name:"Bombora",provider:"Factors.ai"}] },
+  { key:"contactFit", title:"Contact · fit", sub:"Role &amp; persona — who the person is", noun:"contact fit criterion",
+    items:["Job title","Seniority level"] },
+  { key:"contactEngagement", title:"Contact · engagement", sub:"Behavioural — what the person does", noun:"engagement criterion",
+    items:["Replied to marketing email","Submitted form","Registered for marketing event","Attended marketing event","Visited any webpage","Visited use case page"] }
+];
 
-/* GTM Collective descriptions — pre-filled into each signal's GTM Collective comment */
 const DESCRIPTIONS = {
+  "Industry / vertical":"The account's industry or vertical — the most basic ICP filter, separating in-profile from out-of-profile accounts before any behaviour is considered.",
+  "Company size (headcount band)":"Employee count band. A core firmographic that scores fit against your ideal customer size, and supplies the denominator that makes headcount-change signals meaningful.",
+  "Revenue band":"Reported or estimated annual revenue, indicating budget capacity and whether the account sits in your addressable segment.",
+  "Region / country":"Geographic location — determines market fit, language, regulatory context and which team owns the account.",
+  "Business model (B2B / B2C / marketplace)":"Whether the account sells B2B, B2C or runs a marketplace. Often a harder qualifier than size or industry, and decisive for solution fit.",
+  "Growth stage / funding stage":"Maturity of the company (startup, scale-up, enterprise) or funding stage — shapes budget, buying process and urgency.",
+  "Tech stack indicators":"Technologies detected in the account's stack, signalling compatibility, integration potential or an incumbent to displace.",
+  "Buying committee coverage (DMU mapped)":"How much of the decision-making unit is already mapped and contactable. An account with the full DMU known should outrank an identical account with a single unverified contact.",
   "Event attendance":"The account sent representatives to an industry event, conference or webinar — a marker of active category interest and a warm reason to reach out.",
   "Headcount increase":"The company is hiring and growing its team, signalling expansion, fresh budget and new initiatives that often create buying needs.",
   "Earnings report":"A published earnings release exposing financial health, priorities and spending capacity — useful for timing and tailoring outreach.",
@@ -261,7 +232,7 @@ const DESCRIPTIONS = {
   "Product integration":"The account added an integration or partner technology, revealing its stack and its openness to complementary tools.",
   "Executive hiring":"The company hired a new senior leader, often bringing new mandates, preferred vendors and a window to influence direction.",
   "Strategic partnership":"The account announced a partnership, signalling strategic direction and potentially new joint go-to-market needs.",
-  "Bankruptcy filing":"The company filed for bankruptcy or protection — a strong risk/disqualifying signal that should lower priority or pause outreach.",
+  "Bankruptcy filing":"The company filed for bankruptcy or protection — a strong risk signal that should lower priority or pause outreach.",
   "Budget mention":"A public or detected mention of budget allocation, indicating spending intent and a clear timing cue for outreach.",
   "Executive retirement":"A senior leader is retiring, creating succession, new decision-makers and potential vendor re-evaluation.",
   "Asset divestiture":"The company sold off an asset or business unit, reshaping its focus, structure and possibly its tooling needs.",
@@ -274,8 +245,9 @@ const DESCRIPTIONS = {
   "Geographic expansion":"The company is entering a new region or market, creating localisation, operational and tooling needs.",
   "Revenue report":"A reported revenue figure or update reflecting financial performance — useful for prioritisation and messaging.",
   "Bombora":"Bombora Company Surge intent data (surfaced via Factors.ai) showing the account is consuming content on topics tied to your category — evidence they are actively in-market.",
-  "Opened marketing email":"A contact opened one of your marketing emails — a light engagement signal of attention and awareness.",
-  "Replied to marketing email":"A contact replied to a marketing email — a strong, direct engagement signal that warrants fast follow-up.",
+  "Job title":"The contact's stated title — the most direct indicator of whether this person sits inside the buying committee.",
+    "Seniority level":"Where the contact sits in the hierarchy — distinguishes economic buyers and decision-makers from users and influencers.",
+    "Replied to marketing email":"A contact replied to a marketing email — a strong, direct engagement signal that warrants fast follow-up.",
   "Submitted form":"A contact completed a form (demo, content or contact) — a high-intent, hand-raising action.",
   "Registered for marketing event":"A contact registered for a webinar or event, showing topical interest and intent to engage.",
   "Attended marketing event":"A contact actually attended your event or webinar — deeper engagement than registration alone.",
@@ -283,286 +255,235 @@ const DESCRIPTIONS = {
   "Visited use case page":"A contact viewed a specific use-case or solution page — a higher-intent visit signalling they are evaluating fit."
 };
 
-/* ---------- BRANDING: Supabase per-client lookup ---------- */
+const CONTEXT_HINTS = {
+  "Industry / vertical":"e.g. marketplaces, dating, classifieds, e-commerce",
+  "Company size (headcount band)":"e.g. 200–2000 FTE; which property holds this?",
+  "Region / country":"e.g. EU + UK; Nordics weighted higher",
+  "Buying committee coverage (DMU mapped)":"e.g. 3+ contacts incl. one decision-maker",
+  "Event attendance":"which event(s)? event name property?",
+  "Headcount increase":"increase by how much, over what period, which location?",
+  "Visitor intent update (website)":"which pages, what visit threshold?",
+  "Job title":"which titles qualify? exact match or keyword?",
+  "Visited use case page":"which URLs count as use-case pages?"
+};
+
+/* ================= BRANDING ================= */
 const SUPABASE_URL = 'https://ngrcyprtoesdvibfhjvx.supabase.co';
-const SUPABASE_ANON_KEY = 'PASTE_SUPABASE_ANON_KEY_HERE'; // anon public key: Supabase -> Project Settings -> API -> anon public
-
+const SUPABASE_ANON_KEY = 'PASTE_SUPABASE_ANON_KEY_HERE';
 const params = new URLSearchParams(location.search);
-let CLIENT = (params.get('client') || document.getElementById('clientName').textContent || 'Client').trim();
+let CLIENT = (params.get('client') || 'Besedo').trim();
 
-function applyBrand(hex){ if(!hex) return; const h = '#' + (''+hex).replace('#',''); document.documentElement.style.setProperty('--brand', h); document.documentElement.style.setProperty('--brand-soft', h+'22'); }
-function applyClient(name){ CLIENT = name; document.getElementById('clientName').textContent = name; document.getElementById('clientDot').textContent = (name||'C').trim().charAt(0).toUpperCase(); document.title = name + ' · Account Scoring Matrix'; }
-
+function applyBrand(hex){ if(!hex) return; const h='#'+(''+hex).replace('#',''); document.documentElement.style.setProperty('--brand',h); document.documentElement.style.setProperty('--brand-soft',h+'22'); document.documentElement.style.setProperty('--hi',h); }
+function applyClient(n){ CLIENT=n; document.getElementById('clientName').textContent=n; document.getElementById('clientDot').textContent=(n||'C').trim().charAt(0).toUpperCase(); document.title=n+' · Account Scoring Matrix'; }
 async function resolveClient(){
-  let brandHex = params.get('brand');            // optional ?brand= override still wins (handy for testing)
-  let name = params.get('client');
-  const slug = (params.get('client') || '').trim().toLowerCase();
+  let brandHex=params.get('brand'), name=params.get('client');
+  const slug=(params.get('client')||'').trim().toLowerCase();
   if(slug && SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.startsWith('PASTE')){
-    try{
-      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      const { data } = await sb.from('scoring_clients').select('name,brand').eq('slug', slug).maybeSingle();
-      if(data){ if(data.name) name = data.name; if(data.brand && !brandHex) brandHex = data.brand; }
-    }catch(e){ /* fall back to URL/default */ }
+    try{ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+      const {data}=await sb.from('scoring_clients').select('name,brand').eq('slug',slug).maybeSingle();
+      if(data){ if(data.name) name=data.name; if(data.brand&&!brandHex) brandHex=data.brand; }
+    }catch(e){}
   }
   if(name) applyClient(name);
   applyBrand(brandHex);
 }
 
-/* ---------- STATE ---------- */
-let uid = 0;
-function mk(name, side){ return {id:++uid, name, side, provider:"HubSpot", weight:"med", on:false, client:"", gtm:"", custom:false, el:null, pointsEl:null, barEl:null}; }
-function mkFrom(x, side){ const name = typeof x==='string'?x:x.name; const s = mk(name, side); if(typeof x!=='string' && x.provider) s.provider = x.provider; s.gtm = DESCRIPTIONS[name] || ''; return s; }
-const state = {
-  company: COMPANY_SIGNALS.map(x=>mkFrom(x,'company')),
-  contact: CONTACT_SIGNALS.map(x=>mkFrom(x,'contact'))
-};
-
-/* ---------- RENDER ROWS ---------- */
-function providerOptions(selected){
-  return Object.keys(PROVIDERS).map(p=>`<option value="${p}" ${p===selected?'selected':''}>${p}</option>`).join('')
-    + `<option value="__custom" ${selected && !PROVIDERS[selected]?'selected':''}>+ Custom…</option>`;
+/* ================= STATE ================= */
+let uid=0;
+function mk(x,sec){
+  const name = typeof x==='string'?x:x.name;
+  return { id:++uid, name, sec, provider:(typeof x!=='string'&&x.provider)?x.provider:'HubSpot',
+    weight:'med', credit:'na', on:false, context:'', client:'', gtm:DESCRIPTIONS[name]||'', custom:false, el:null };
 }
+const state={};
+function seed(){ SECTIONS.forEach(s=> state[s.key]=s.items.map(x=>mk(x,s.key)) ); }
+seed();
+
+/* ================= RENDER ================= */
+function providerOptions(sel){
+  return Object.keys(PROVIDERS).map(p=>`<option value="${p}" ${p===sel?'selected':''}>${p}</option>`).join('')+`<option value="__custom">+ Custom…</option>`;
+}
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function paintWeight(el,v){
+  const c = v==='high'?getVar('--hi'): v==='low'?getVar('--muted'):getVar('--ink');
+  el.style.color=c; el.style.borderColor = v==='high'?getVar('--hi'):getVar('--line');
+  el.style.fontWeight = v==='high'?'700':'600';
+}
+function getVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
 
 function buildRow(s){
-  const row = document.createElement('div');
-  row.className = 'row';
-  row.dataset.id = s.id;
-  row.innerHTML = `
+  const row=document.createElement('div');
+  row.className='row';
+  row.innerHTML=`
     <div class="toggle" title="Select / deselect"></div>
-    <div class="name">
-      <span class="nm">${s.name}</span>
-      <div class="bar"><i></i></div>
-    </div>
-    <div class="prov">
-      <button class="provbtn" type="button"><span class="swatch"></span><span class="pname"></span><span class="car">▼</span></button>
-      <div class="provmenu"></div>
-    </div>
-    <button class="icbtn rm-btn" title="Remove signal from list">✕</button>
-    <select class="wt" data-w="${s.weight}">
-      <option value="low" ${s.weight==='low'?'selected':''}>Low impact</option>
-      <option value="med" ${s.weight==='med'?'selected':''}>Medium</option>
-      <option value="high" ${s.weight==='high'?'selected':''}>High impact</option>
-    </select>
-    <div class="pts">0<small> pts</small></div>
-    <div class="actions">
-      <button class="icbtn note-btn" title="Notes">💬</button>
-    </div>
-    <div class="notes">
-      <div class="note">
-        <label><span class="tag" style="background:var(--brand)"></span>${CLIENT} notes</label>
-        <textarea class="cnote" placeholder="Write your question or comment here!"></textarea>
+    <div class="nm">${esc(s.name)}</div>
+    <div class="prov"><button class="provbtn" type="button"><span class="swatch"></span><span class="pname"></span><span class="car">▼</span></button><div class="provmenu"></div></div>
+    <button class="icbtn rm-btn" title="Remove from list">✕</button>
+    <select class="sel2 wt"><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select>
+    <select class="sel2 cr">${CREDIT_OPTS.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select>
+    <button class="icbtn note-btn" title="Context & notes">💬</button>
+    <div class="panel">
+      <div class="ctxwrap">
+        <div class="fieldlab"><span class="tag" style="background:var(--muted-2)"></span>Context / configuration</div>
+        <input type="text" class="ctx" placeholder="${esc(CONTEXT_HINTS[s.name]||'Which property, threshold, value or definition sits behind this?')}" />
       </div>
-      <div class="note">
-        <label><span class="tag" style="background:var(--gtm)"></span>GTM Collective notes</label>
-        <textarea class="gnote" placeholder="Our recommendation / rationale…"></textarea>
+      <div class="notes2">
+        <div><div class="fieldlab"><span class="tag" style="background:var(--brand)"></span><span class="cl-lab"></span> notes</div>
+          <textarea class="cnote" placeholder="Write your question or comment here!"></textarea></div>
+        <div><div class="fieldlab"><span class="tag" style="background:var(--gtm)"></span>GTM Collective notes</div>
+          <textarea class="gnote" placeholder="Our recommendation / rationale…"></textarea></div>
       </div>
     </div>`;
 
-  const toggle = row.querySelector('.toggle');
-  const provBtn = row.querySelector('.provbtn');
-  const provMenu = row.querySelector('.provmenu');
-  const swatch = row.querySelector('.swatch');
-  const pname = row.querySelector('.pname');
-  const wt = row.querySelector('.wt');
-  const noteBtn = row.querySelector('.note-btn');
-  const rmBtn = row.querySelector('.rm-btn');
-  const notes = row.querySelector('.notes');
+  const toggle=row.querySelector('.toggle'), provBtn=row.querySelector('.provbtn'), provMenu=row.querySelector('.provmenu'),
+        swatch=row.querySelector('.swatch'), pname=row.querySelector('.pname'), wt=row.querySelector('.wt'),
+        cr=row.querySelector('.cr'), panel=row.querySelector('.panel'), ctx=row.querySelector('.ctx'),
+        cnote=row.querySelector('.cnote'), gnote=row.querySelector('.gnote');
+  s.el=row;
 
-  s.el = row;
-  s.pointsEl = row.querySelector('.pts');
-  s.barEl = row.querySelector('.bar i');
+  row.querySelector('.cl-lab').textContent=CLIENT;
+  wt.value=s.weight; cr.value=s.credit; ctx.value=s.context; cnote.value=s.client; gnote.value=s.gtm;
+  paintWeight(wt,s.weight);
 
-  function paintToggle(){ toggle.classList.toggle('on', s.on); row.classList.toggle('sel', s.on); }
-  function paintProv(){ swatch.style.background = PROVIDERS[s.provider] || '#999'; pname.textContent = s.provider; }
+  function paintToggle(){ toggle.classList.toggle('on',s.on); row.classList.toggle('sel',s.on); }
+  function paintProv(){ swatch.style.background=PROVIDERS[s.provider]||'#999'; pname.textContent=s.provider; }
   function buildMenu(){
-    provMenu.innerHTML = Object.keys(PROVIDERS).map(p=>
-      `<button type="button" class="provopt" data-p="${p}"><span class="dot" style="background:${PROVIDERS[p]}"></span>${p}</button>`).join('')
-      + `<button type="button" class="provopt custom" data-p="__custom"><span class="dot" style="background:linear-gradient(135deg,#FF7A59,#FB7232,#DA7756)"></span>+ Custom provider…</button>`;
-    provMenu.querySelectorAll('.provopt').forEach(opt=>{
-      opt.onclick = (ev)=>{ ev.stopPropagation();
-        if(opt.dataset.p === '__custom'){
-          const name = (prompt('Provider name:','')||'').trim();
-          if(name){
-            const hex = (prompt('Brand color hex (e.g. 3B82F6):','3B82F6')||'').trim().replace('#','');
-            PROVIDERS[name] = '#'+(hex||'888888');
-            s.provider = name;
-            refreshProviders();
-          }
-        } else { s.provider = opt.dataset.p; }
+    provMenu.innerHTML=Object.keys(PROVIDERS).map(p=>`<button type="button" class="provopt" data-p="${esc(p)}"><span class="dot" style="background:${PROVIDERS[p]}"></span>${esc(p)}</button>`).join('')
+      +`<button type="button" class="provopt custom" data-p="__custom"><span class="dot" style="background:linear-gradient(135deg,#FF7A59,#FB7232,#FF2120)"></span>+ Custom provider…</button>`;
+    provMenu.querySelectorAll('.provopt').forEach(o=>{
+      o.onclick=ev=>{ ev.stopPropagation();
+        if(o.dataset.p==='__custom'){
+          const n=(prompt('Provider name:','')||'').trim();
+          if(n){ const hex=(prompt('Brand color hex (e.g. 3B82F6):','3B82F6')||'').trim().replace('#',''); PROVIDERS[n]='#'+(hex||'888888'); s.provider=n; refreshProviders(); }
+        } else s.provider=o.dataset.p;
         paintProv(); provMenu.classList.remove('open');
       };
     });
   }
-  s._buildMenu = buildMenu; s._paintProv = paintProv;
+  s._buildMenu=buildMenu; s._paintProv=paintProv;
   paintToggle(); buildMenu(); paintProv();
 
-  toggle.onclick = ()=>{ s.on = !s.on; paintToggle(); recompute(); };
-  provBtn.onclick = (ev)=>{ ev.stopPropagation(); const open = provMenu.classList.contains('open'); closeAllMenus(); if(!open) provMenu.classList.add('open'); };
-
-  wt.onchange = ()=>{ s.weight = wt.value; wt.dataset.w = s.weight; recompute(); };
-
-  noteBtn.onclick = ()=> notes.classList.toggle('open');
-  if(rmBtn) rmBtn.onclick = ()=> removeSignal(s);
-  const cnote = row.querySelector('.cnote'), gnote = row.querySelector('.gnote');
-  cnote.value = s.client; gnote.value = s.gtm;
-  cnote.oninput = e=> s.client = e.target.value;
-  gnote.oninput = e=> s.gtm = e.target.value;
-
+  toggle.onclick=()=>{ s.on=!s.on; paintToggle(); updateCounts(); };
+  provBtn.onclick=ev=>{ ev.stopPropagation(); const open=provMenu.classList.contains('open'); closeAllMenus(); if(!open) provMenu.classList.add('open'); };
+  wt.onchange=()=>{ s.weight=wt.value; paintWeight(wt,s.weight); updateCounts(); };
+  cr.onchange=()=>{ s.credit=cr.value; };
+  row.querySelector('.note-btn').onclick=()=>panel.classList.toggle('open');
+  row.querySelector('.rm-btn').onclick=()=>removeItem(s);
+  ctx.oninput=e=>s.context=e.target.value;
+  cnote.oninput=e=>s.client=e.target.value;
+  gnote.oninput=e=>s.gtm=e.target.value;
   return row;
 }
 
-function buildAdder(side, listEl){
-  const wrap = document.createElement('div');
-  wrap.className = 'addrow collapsed';
-  wrap.innerHTML = `
-    <button class="add-toggle">＋ Add a ${side} signal</button>
+function buildAdder(secKey,noun,listEl){
+  const w=document.createElement('div');
+  w.className='addrow collapsed';
+  w.innerHTML=`<button class="add-toggle">＋ Add a ${noun}</button>
     <div class="addform">
-      <div class="f"><label>Signal name</label><input type="text" class="a-name" placeholder="e.g. Hiring spike" /></div>
+      <div class="f"><label>Name</label><input type="text" class="a-name" placeholder="e.g. Hiring spike" /></div>
       <div class="f"><label>Provider</label><select class="a-prov">${providerOptions('HubSpot')}</select></div>
-      <div class="f"><label>Weight</label><select class="a-wt"><option value="low">Low impact</option><option value="med" selected>Medium</option><option value="high">High impact</option></select></div>
-      <button class="btn primary a-add">Add signal</button>
+      <div class="f"><label>Priority</label><select class="a-wt"><option value="low">Low</option><option value="med" selected>Medium</option><option value="high">High</option></select></div>
+      <div class="f"><label>Credits</label><select class="a-cr">${CREDIT_OPTS.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select></div>
+      <button class="btn primary a-add">Add</button>
       <div class="custom-prov f" style="grid-column:1 / -1">
         <div class="f" style="flex:1"><label>Custom provider name</label><input type="text" class="a-cpname" placeholder="e.g. Apollo" /></div>
         <div class="f"><label>Color</label><input type="color" class="a-cpcolor" value="#3B82F6" /></div>
       </div>
     </div>`;
-  const tgl = wrap.querySelector('.add-toggle');
-  const aprov = wrap.querySelector('.a-prov');
-  const custom = wrap.querySelector('.custom-prov');
-  tgl.onclick = ()=> wrap.classList.toggle('collapsed');
-  aprov.onchange = ()=> custom.classList.toggle('show', aprov.value==='__custom');
-  wrap.querySelector('.a-add').onclick = ()=>{
-    const name = wrap.querySelector('.a-name').value.trim();
-    if(!name) return;
-    let provider = aprov.value;
-    if(provider === '__custom'){
-      const cpn = wrap.querySelector('.a-cpname').value.trim();
-      if(!cpn){ alert('Enter a custom provider name'); return; }
-      PROVIDERS[cpn] = wrap.querySelector('.a-cpcolor').value;
-      provider = cpn;
-    }
-    const s = mk(name, side);
-    s.provider = provider;
-    s.weight = wrap.querySelector('.a-wt').value;
-    s.on = true;
-    s.custom = true;
-    state[side].push(s);
-    listEl.insertBefore(buildRow(s), wrap);
+  const aprov=w.querySelector('.a-prov'), custom=w.querySelector('.custom-prov');
+  w.querySelector('.add-toggle').onclick=()=>w.classList.toggle('collapsed');
+  aprov.onchange=()=>custom.classList.toggle('show',aprov.value==='__custom');
+  w.querySelector('.a-add').onclick=()=>{
+    const name=w.querySelector('.a-name').value.trim(); if(!name) return;
+    let provider=aprov.value;
+    if(provider==='__custom'){ const cpn=w.querySelector('.a-cpname').value.trim(); if(!cpn){alert('Enter a custom provider name');return;} PROVIDERS[cpn]=w.querySelector('.a-cpcolor').value; provider=cpn; }
+    const s=mk(name,secKey); s.provider=provider; s.weight=w.querySelector('.a-wt').value; s.credit=w.querySelector('.a-cr').value; s.on=true; s.custom=true; s.gtm='';
+    state[secKey].push(s);
+    listEl.insertBefore(buildRow(s),w);
     refreshProviders();
-    wrap.querySelector('.a-name').value=''; wrap.querySelector('.a-cpname').value='';
-    aprov.value='HubSpot'; custom.classList.remove('show'); wrap.querySelector('.a-wt').value='med';
-    recompute();
+    w.querySelector('.a-name').value=''; w.querySelector('.a-cpname').value='';
+    aprov.value='HubSpot'; custom.classList.remove('show'); w.querySelector('.a-wt').value='med'; w.querySelector('.a-cr').value='na';
+    updateCounts();
   };
-  return wrap;
+  return w;
+}
+
+function renderAll(){
+  const host=document.getElementById('sections'); host.innerHTML='';
+  SECTIONS.forEach(sec=>{
+    const wrap=document.createElement('div'); wrap.className='section';
+    wrap.innerHTML=`<div class="sec-head"><h2>${sec.title}<span class="ss">${sec.sub}</span></h2><span class="cnt" id="cnt-${sec.key}"></span></div>
+      <div class="list" id="list-${sec.key}"><div class="hrow"><span></span><span>Criterion</span><span>Provider</span><span></span><span>Priority</span><span>Credits</span><span></span></div></div>`;
+    host.appendChild(wrap);
+    const listEl=wrap.querySelector('#list-'+sec.key);
+    state[sec.key].forEach(s=>listEl.appendChild(buildRow(s)));
+    listEl.appendChild(buildAdder(sec.key,sec.noun,listEl));
+  });
+  updateCounts();
 }
 
 function refreshProviders(){
-  // rebuild every row's color menu (so new custom providers appear) and repopulate add-form selects
-  [...state.company, ...state.contact].forEach(s=>{ if(s._buildMenu) s._buildMenu(); if(s._paintProv) s._paintProv(); });
-  document.querySelectorAll('.a-prov').forEach(sel=>{ const cur=sel.value; sel.innerHTML=providerOptions(cur); if([...sel.options].some(o=>o.value===cur)) sel.value=cur; });
+  SECTIONS.forEach(sec=>state[sec.key].forEach(s=>{ if(s._buildMenu) s._buildMenu(); if(s._paintProv) s._paintProv(); }));
+  document.querySelectorAll('.a-prov').forEach(sel=>{ const c=sel.value; sel.innerHTML=providerOptions(c); if([...sel.options].some(o=>o.value===c)) sel.value=c; });
 }
-function removeSignal(s){
-  const arr = state[s.side];
-  const i = arr.indexOf(s);
-  if(i>-1) arr.splice(i,1);
-  if(s.el) s.el.remove();
-  recompute();
-}
+function removeItem(s){ const arr=state[s.sec], i=arr.indexOf(s); if(i>-1) arr.splice(i,1); if(s.el) s.el.remove(); updateCounts(); }
 function closeAllMenus(){ document.querySelectorAll('.provmenu.open').forEach(m=>m.classList.remove('open')); }
-document.addEventListener('click', closeAllMenus);
+document.addEventListener('click',closeAllMenus);
 
-function renderSection(side, listEl){
-  listEl.innerHTML='';
-  state[side].forEach(s=> listEl.appendChild(buildRow(s)) );
-  listEl.appendChild(buildAdder(side, listEl));
-}
-
-/* ---------- SCORING (always sums to 100) ---------- */
-function allocate(list){
-  const w = list.map(s=>WEIGHTS[s.weight]);
-  const total = w.reduce((a,b)=>a+b,0);
-  if(total===0) return list.map(()=>0);
-  const raw = w.map(x=>x/total*100);
-  const base = raw.map(Math.floor);
-  let rem = 100 - base.reduce((a,b)=>a+b,0);
-  const order = raw.map((r,i)=>({i,frac:r-Math.floor(r)})).sort((a,b)=>b.frac-a.frac);
-  const out = base.slice();
-  for(let k=0;k<rem;k++) out[order[k % order.length].i]++;
-  return out;
-}
-
-function recompute(){
-  const selected = [...state.company, ...state.contact].filter(s=>s.on);
-  const pts = allocate(selected);
-  const map = new Map(); selected.forEach((s,i)=>map.set(s.id, pts[i]));
-
-  let co=0, ct=0;
-  [...state.company, ...state.contact].forEach(s=>{
-    const p = map.get(s.id) || 0;
-    if(s.on){ if(s.side==='company') co+=p; else ct+=p; }
-    s.pointsEl.innerHTML = p + '<small> pts</small>';
-    s.pointsEl.style.color = s.on ? (p>0?'var(--ink)':'var(--muted-2)') : 'var(--muted-2)';
-    s.barEl.style.width = (s.on ? p : 0) + '%';
+function updateCounts(){
+  let hi=0,md=0,lo=0,tot=0;
+  SECTIONS.forEach(sec=>{
+    const on=state[sec.key].filter(s=>s.on);
+    tot+=on.length;
+    on.forEach(s=>{ if(s.weight==='high')hi++; else if(s.weight==='low')lo++; else md++; });
+    const el=document.getElementById('cnt-'+sec.key);
+    if(el) el.textContent=on.length+' of '+state[sec.key].length+' selected';
   });
-
-  const total = co+ct;
-  document.getElementById('totalNum').textContent = total;
-  document.getElementById('coSub').textContent = co;
-  document.getElementById('ctSub').textContent = ct;
-  document.getElementById('selCount').textContent = selected.length;
-  document.getElementById('coBar').style.width = co+'%';
-  document.getElementById('ctBar').style.width = ct+'%';
-
-  const coOn = state.company.filter(s=>s.on).length, ctOn = state.contact.filter(s=>s.on).length;
-  document.getElementById('coCnt').textContent = coOn+' of '+state.company.length+' on';
-  document.getElementById('ctCnt').textContent = ctOn+' of '+state.contact.length+' on';
+  document.getElementById('selCount').textContent=tot;
+  document.getElementById('hiCnt').textContent=hi;
+  document.getElementById('mdCnt').textContent=md;
+  document.getElementById('loCnt').textContent=lo;
+  const d=tot||1;
+  document.getElementById('hiBar').style.width=(hi/d*100)+'%';
+  document.getElementById('mdBar').style.width=(md/d*100)+'%';
+  document.getElementById('loBar').style.width=(lo/d*100)+'%';
 }
 
-/* ---------- EXPORT / IMPORT ---------- */
-function exportPDF(){
-  const el = document.getElementById('sheet');
-  document.querySelectorAll('.toolbar').forEach(t=>t.style.display='none');
-  document.querySelectorAll('.addrow').forEach(t=>t.style.display='none');
-  html2pdf().set({
-    margin:[8,8,8,8], filename:CLIENT.replace(/\s+/g,'-')+'-scoring-matrix.pdf',
-    image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true},
-    jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
-  }).from(el).save().then(()=>{
-    document.querySelectorAll('.toolbar').forEach(t=>t.style.display='flex');
-    document.querySelectorAll('.addrow').forEach(t=>t.style.display='block');
-  });
-}
+/* ================= EXPORT / IMPORT ================= */
+function strip(list){ return list.map(s=>({name:s.name,provider:s.provider,weight:s.weight,credit:s.credit,on:s.on,context:s.context,client:s.client,gtm:s.gtm,custom:s.custom})); }
 function exportJSON(){
-  const data = {client:CLIENT, brand:getComputedStyle(document.documentElement).getPropertyValue('--brand').trim(), providers:PROVIDERS, company:strip(state.company), contact:strip(state.contact)};
-  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=CLIENT.replace(/\s+/g,'-')+'-scoring-matrix.json'; a.click();
+  const out={client:CLIENT,generated:new Date().toISOString(),sections:{}};
+  SECTIONS.forEach(sec=>out.sections[sec.key]=strip(state[sec.key]));
+  const b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=CLIENT.replace(/\s+/g,'-')+'-scoring-matrix.json'; a.click();
 }
-function strip(list){ return list.map(s=>({name:s.name,provider:s.provider,weight:s.weight,on:s.on,client:s.client,gtm:s.gtm,custom:s.custom})); }
 function importJSON(e){
-  const file=e.target.files[0]; if(!file) return;
+  const f=e.target.files[0]; if(!f) return;
   const r=new FileReader();
   r.onload=()=>{ try{
-    const d=JSON.parse(r.result);
-    if(d.providers) Object.assign(PROVIDERS,d.providers);
-    ['company','contact'].forEach(side=>{
-      if(!Array.isArray(d[side])) return;
-      state[side]=d[side].map(o=>{const s=mk(o.name,side); s.provider=o.provider||'HubSpot'; s.weight=o.weight||'med'; s.on=!!o.on; s.client=o.client||''; s.gtm=o.gtm||DESCRIPTIONS[o.name]||''; s.custom=!!o.custom; return s;});
+    const d=JSON.parse(r.result), src=d.sections||d;
+    SECTIONS.forEach(sec=>{
+      if(!Array.isArray(src[sec.key])) return;
+      state[sec.key]=src[sec.key].map(o=>{ const s=mk(o.name,sec.key);
+        s.provider=o.provider||'HubSpot'; s.weight=o.weight||'med'; s.credit=o.credit||'na';
+        s.on=!!o.on; s.context=o.context||''; s.client=o.client||''; s.gtm=o.gtm||DESCRIPTIONS[o.name]||''; s.custom=!!o.custom; return s; });
     });
-    init();
+    renderAll();
   }catch(err){ alert('Could not read that file.'); } };
-  r.readAsText(file); e.target.value='';
+  r.readAsText(f); e.target.value='';
 }
-function resetAll(){ if(!confirm('Reset all selections and weights?')) return;
-  state.company=COMPANY_SIGNALS.map(x=>mkFrom(x,'company')); state.contact=CONTACT_SIGNALS.map(x=>mkFrom(x,'contact')); init();
+function resetAll(){ if(!confirm('Reset all selections, priorities and context?')) return; uid=0; seed(); renderAll(); }
+function exportPDF(){
+  const el=document.getElementById('sheet');
+  document.querySelectorAll('.toolbar,.addrow').forEach(t=>t.style.display='none');
+  html2pdf().set({margin:[8,8,8,8],filename:CLIENT.replace(/\s+/g,'-')+'-scoring-matrix.pdf',
+    image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}})
+    .from(el).save().then(()=>{ document.querySelectorAll('.toolbar').forEach(t=>t.style.display='flex'); document.querySelectorAll('.addrow').forEach(t=>t.style.display='block'); });
 }
 
-/* ---------- INIT ---------- */
-function init(){
-  renderSection('company', document.getElementById('companyList'));
-  renderSection('contact', document.getElementById('contactList'));
-  recompute();
-}
-async function boot(){ await resolveClient(); init(); }
+/* ================= BOOT ================= */
+async function boot(){ await resolveClient(); renderAll(); }
 boot();
 </script>
 </body>
