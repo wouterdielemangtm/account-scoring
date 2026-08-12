@@ -507,10 +507,33 @@ function deserialize(d){
   if(!d) return false;
   applyingRemote=true; uid=0;
   SECTIONS.forEach(sec=>{
-    if(!Array.isArray(d[sec.key])) return;
-    state[sec.key]=d[sec.key].map(o=>{ const s=mk(o.name,sec.key);
+    const saved = Array.isArray(d[sec.key]) ? d[sec.key] : [];
+    const savedByName = new Map(saved.map(o=>[o.name,o]));
+    const seen = new Set();
+    const rebuilt = [];
+    // 1) current defaults, in defined order, hydrated from saved values where present
+    sec.items.forEach(x=>{
+      const name = typeof x==='string'?x:x.name;
+      const o = savedByName.get(name);
+      const s = mk(x, sec.key);
+      if(o){
+        s.provider=o.provider||s.provider; s.weight=o.weight||'med'; s.credit=o.credit||'na';
+        s.on=!!o.on; s.context=o.context||''; s.client=o.client||'';
+        s.gtm=(o.gtm!==undefined && o.gtm!=='')?o.gtm:(DESCRIPTIONS[name]||'');
+        seen.add(name);
+      }
+      rebuilt.push(s);
+    });
+    // 2) anything saved that isn't a current default: custom additions, or defaults the editor removed
+    saved.forEach(o=>{
+      if(seen.has(o.name)) return;
+      if(!o.custom) return;               // non-custom + not in defaults = deliberately removed, stay removed
+      const s = mk(o.name, sec.key);
       s.provider=o.provider||'HubSpot'; s.weight=o.weight||'med'; s.credit=o.credit||'na';
-      s.on=!!o.on; s.context=o.context||''; s.client=o.client||''; s.gtm=(o.gtm!==undefined?o.gtm:(DESCRIPTIONS[o.name]||'')); s.custom=!!o.custom; return s; });
+      s.on=!!o.on; s.context=o.context||''; s.client=o.client||''; s.gtm=o.gtm||''; s.custom=true;
+      rebuilt.push(s);
+    });
+    state[sec.key]=rebuilt;
   });
   renderAll(); applyingRemote=false; return true;
 }
