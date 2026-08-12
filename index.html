@@ -195,7 +195,7 @@ const SECTIONS = [
   { key:"companySignals", title:"Company · signals", sub:"Behavioural &amp; event-based — what they do", noun:"company signal",
     items:["Event attendance","Headcount increase","Earnings report","Asset acquisition","Layoffs","Leadership content","Research intent level change","Competitor identified","Division spinoff","Office closure","Executive departure","Physical expansion","Client signing","Visitor intent update (website)","Key stakeholder identified","VC funding","Strategic investment","Company spinoff","Industry recognition","Valuation update","Product launch","Executive promotion","Lawsuit filing","Product development","Received technology investment","IPO","Product integration","Executive hiring","Strategic partnership","Bankruptcy filing","Budget mention","Executive retirement","Asset divestiture","Deal timing","Growth metrics","Partnership ended","M&A","Regulatory approval","Pain point","Geographic expansion","Revenue report",{name:"Bombora",provider:"Factors.ai"}] },
   { key:"contactFit", title:"Contact · fit", sub:"Role &amp; persona — who the person is", noun:"contact fit criterion",
-    items:["Job title","Seniority level"] },
+    items:["Job title","Seniority level","Country","Language","Persona"] },
   { key:"contactEngagement", title:"Contact · engagement", sub:"Behavioural — what the person does", noun:"engagement criterion",
     items:["Replied to marketing email","Submitted form","Registered for marketing event","Attended marketing event","Visited any webpage","Visited use case page"] }
 ];
@@ -253,6 +253,9 @@ const DESCRIPTIONS = {
   "Bombora":"Bombora Company Surge intent data (surfaced via Factors.ai) showing the account is consuming content on topics tied to your category — evidence they are actively in-market.",
   "Job title":"The contact's stated title — the most direct indicator of whether this person sits inside the buying committee.",
     "Seniority level":"Where the contact sits in the hierarchy — distinguishes economic buyers and decision-makers from users and influencers.",
+    "Country":"The contact's own country, which can differ from the account's HQ — determines territory ownership, outreach timing and which regional playbook applies.",
+    "Language":"The contact's working or preferred language, driving which sequence, content and sales rep they should be routed to.",
+    "Persona":"How closely the contact matches a defined target persona, combining role, responsibility and buying motivation into a single fit judgement.",
     "Replied to marketing email":"A contact replied to a marketing email — a strong, direct engagement signal that warrants fast follow-up.",
   "Submitted form":"A contact completed a form (demo, content or contact) — a high-intent, hand-raising action.",
   "Registered for marketing event":"A contact registered for a webinar or event, showing topical interest and intent to engage.",
